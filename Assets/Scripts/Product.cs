@@ -14,15 +14,15 @@ public class Product : MonoBehaviour {
 
 
     [SerializeField]
-    float initialTime = 0.6f;
+    float initialTime;
     [SerializeField]
     float productCost;
     [SerializeField]
-    float baseCost = 4f;
+    float baseCost;
     [SerializeField]
-    float coefficient = 2f;
+    float coefficient;
     [SerializeField]
-    float initialProductivity = 1.67f;
+    float initialProductivity;
 
 
     float progress;
@@ -39,6 +39,71 @@ public class Product : MonoBehaviour {
 
     // UI
     float progressBarWidth;
+
+    public float InitialTime
+    {
+        get
+        {
+            return initialTime;
+        }
+
+        set
+        {
+            initialTime = value;
+        }
+    }
+
+    public float ProductCost
+    {
+        get
+        {
+            return productCost;
+        }
+
+        set
+        {
+            productCost = value;
+        }
+    }
+
+    public float BaseCost
+    {
+        get
+        {
+            return baseCost;
+        }
+
+        set
+        {
+            baseCost = value;
+        }
+    }
+
+    public float Coefficient
+    {
+        get
+        {
+            return coefficient;
+        }
+
+        set
+        {
+            coefficient = value;
+        }
+    }
+
+    public float InitialProductivity
+    {
+        get
+        {
+            return initialProductivity;
+        }
+
+        set
+        {
+            initialProductivity = value;
+        }
+    }
 
     public event EventHandler ProductionComplete;
     public event EventHandler ProductSold;
@@ -110,7 +175,7 @@ public class Product : MonoBehaviour {
         }
     }
 
-    public void SellButtonPressed()
+    public void SellAll()
     {
         Sell();
     }
