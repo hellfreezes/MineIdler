@@ -223,7 +223,7 @@ public class Product : MonoBehaviour {
 
     void CheckForAbilityToBuyBuilding()
     {
-        if (GameManager.Instance.Money >= currentBuildingCost)
+        if (GameManager.Instance.EnoughMoney(currentBuildingCost))
         {
             buyButtonUI.interactable = true;
         } else
@@ -241,7 +241,7 @@ public class Product : MonoBehaviour {
 
     public void BuyBuilding()
     {
-        if (GameManager.Instance.Money >= currentBuildingCost)
+        if (GameManager.Instance.EnoughMoney(currentBuildingCost))
         {
             GameManager.Instance.SpendMoney(currentBuildingCost);
             AddBuilding(GameManager.Instance.BuyStep);

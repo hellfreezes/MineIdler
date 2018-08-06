@@ -65,6 +65,16 @@ public class GameManager : MonoBehaviour {
 		
 	}
 
+    public bool EnoughMoney(float amount)
+    {
+        if (money >= amount)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     public void RegisterProduct(Product newProduct)
     {
         if (newProduct != null)
@@ -88,6 +98,11 @@ public class GameManager : MonoBehaviour {
     {
         money += amount;
         OnMoneyAmountChanged();
+    }
+
+    public void AddMoney(float amount)
+    {
+        AddMoneyAmount(amount);
     }
 
     public void SpendMoney(float amount)

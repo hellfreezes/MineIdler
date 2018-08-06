@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class SoundController : MonoBehaviour {
     [SerializeField]
+    bool playMusic = true;
+    [SerializeField]
     AudioClip music;
     [SerializeField]
     AudioClip onSold;
@@ -31,7 +33,8 @@ public class SoundController : MonoBehaviour {
     // Use this for initialization
     void Start () {
         universalPosition = Camera.main.transform.position;
-        SetBackgrounMusic();
+        if (playMusic)
+            SetBackgrounMusic();
     }
 
     void SetBackgrounMusic()
