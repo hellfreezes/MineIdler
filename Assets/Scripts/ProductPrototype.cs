@@ -10,6 +10,7 @@ public class ProductPrototype {
     public float baseCost;
     public float coefficient;
     public float initialProductivity;
+    public ProductType productType;
 
     public ProductPrototype()
     {

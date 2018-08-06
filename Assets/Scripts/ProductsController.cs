@@ -13,14 +13,42 @@ public class ProductsController : MonoBehaviour {
 
     List<ProductPrototype> products;
 
+    static ProductsController instance;
+    public static ProductsController Instance
+    {
+        get
+        {
+            return instance;
+        }
+    }
 
+    // Use this for initialization
+    void OnEnable () {
+        if (instance != null)
+        {
+            Debug.LogError("Обнаружено два контроллера продуктов на сцене");
+        }
+        else
+        {
+            instance = this;
+        }
 
-	// Use this for initialization
-	void Start () {
+        // Инициализация перенесена из этого класса в GameManager
+    }
+
+    public void Init()
+    {
+        CreatePrototypes();
+        CreatePanels();
+    }
+
+    void CreatePrototypes()
+    {
         products = new List<ProductPrototype>();
 
         ProductPrototype p = new ProductPrototype();
         p.name = "Pie";
+        p.productType = ProductType.PIE;
         p.sprite = 0;
         p.initialTime = 0.6f;
         p.productCost = 1;
@@ -31,6 +59,7 @@ public class ProductsController : MonoBehaviour {
 
         p = new ProductPrototype();
         p.name = "Burger";
+        p.productType = ProductType.BURGER;
         p.sprite = 1;
         p.initialTime = 3f;
         p.productCost = 60;
@@ -41,6 +70,7 @@ public class ProductsController : MonoBehaviour {
 
         p = new ProductPrototype();
         p.name = "Restorant";
+        p.productType = ProductType.RESTORANT;
         p.sprite = 2;
         p.initialTime = 6f;
         p.productCost = 540;
@@ -49,11 +79,16 @@ public class ProductsController : MonoBehaviour {
         p.initialProductivity = 20f;
         products.Add(p);
 
-
-
-        CreatePanels();
-
-
+        p = new ProductPrototype();
+        p.name = "Butcher";
+        p.productType = ProductType.BUTCHER;
+        p.sprite = 3;
+        p.initialTime = 12f;
+        p.productCost = 4320;
+        p.baseCost = 8640;
+        p.coefficient = 1.13f;
+        p.initialProductivity = 360f;
+        products.Add(p);
     }
 
     void CreatePanels()
@@ -65,14 +100,21 @@ public class ProductsController : MonoBehaviour {
             go.name = "Product - " + proto.name;
 
             Product p = go.GetComponent<Product>();
+            p.ProductName = proto.name;
             p.InitialProductivity = proto.initialProductivity;
             p.InitialTime = proto.initialTime;
             p.ProductCost = proto.productCost;
             p.BaseCost = proto.baseCost;
             p.Coefficient = proto.coefficient;
             p.InitialProductivity = proto.initialProductivity;
+            p.Sprite = sprites[proto.sprite];
 
-            p.gameObject.transform.Find("BackGround").transform.Find("Button").GetComponentInChildren<Image>().sprite = sprites[proto.sprite];
+            p.gameObject.transform.Find("BackGround").transform.Find("Button").GetComponentInChildren<Image>().sprite = p.Sprite;
         }
+    }
+
+    public Sprite GetProsuctSprite(ProductType t)
+    {
+        return sprites[(int)t];
     }
 }

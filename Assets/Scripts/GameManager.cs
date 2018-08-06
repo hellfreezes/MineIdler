@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviour {
 
     float money = 0;
 
-    List<Product> products;
+    Dictionary<string, Product> products;
 
     static GameManager instance;
 
@@ -52,11 +52,13 @@ public class GameManager : MonoBehaviour {
         }
         instance = this;
 
-        products = new List<Product>();
+        products = new Dictionary<string, Product>();
     }
 
     private void Start()
     {
+        ProductsController.Instance.Init();
+        ManagersController.Instance.Init();
         AddMoneyAmount(startMoney);
     }
 
@@ -79,7 +81,8 @@ public class GameManager : MonoBehaviour {
     {
         if (newProduct != null)
         {
-            products.Add(newProduct);
+            //Debug.Log("Добавлен продукт: " + newProduct.ProductName);
+            products.Add(newProduct.ProductName, newProduct);
             newProduct.ProductSold += OnProductSold;
             newProduct.ProductSold += SoundController.Instance.OnProductSold;
             newProduct.BuildingPurchased += SoundController.Instance.OnBuy;
@@ -119,6 +122,18 @@ public class GameManager : MonoBehaviour {
         if (MoneyAmountChanged != null)
         {
             MoneyAmountChanged(this, EventArgs.Empty);
+        }
+    }
+
+    public Product GetProductFromList(string name)
+    {
+        if (products.ContainsKey(name))
+        {
+            return products[name];
+        } else
+        {
+            Debug.LogError("products не содержит ключа '" + name + "'");
+            return null;
         }
     }
 }

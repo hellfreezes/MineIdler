@@ -4,7 +4,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Product : MonoBehaviour {
+public enum ProductType
+{
+    PIE = 0,
+    BURGER = 1,
+    RESTORANT = 2,
+    BUTCHER
+};
+
+public class Product : MonoBehaviour  {
     RectTransform progressBarUI;
     Button buyButtonUI;
     Text numberOfBuildingsTextUI;
@@ -13,15 +21,13 @@ public class Product : MonoBehaviour {
 
 
 
-    [SerializeField]
+    ProductType productType;
+    Sprite sprite;
+    string productName;
     float initialTime;
-    [SerializeField]
     float productCost;
-    [SerializeField]
     float baseCost;
-    [SerializeField]
     float coefficient;
-    [SerializeField]
     float initialProductivity;
 
 
@@ -40,6 +46,9 @@ public class Product : MonoBehaviour {
     // UI
     float progressBarWidth;
 
+
+
+    #region Properties
     public float InitialTime
     {
         get
@@ -104,6 +113,47 @@ public class Product : MonoBehaviour {
             initialProductivity = value;
         }
     }
+
+    public string ProductName
+    {
+        get
+        {
+            return productName;
+        }
+
+        set
+        {
+            productName = value;
+        }
+    }
+
+    public Sprite Sprite
+    {
+        get
+        {
+            return sprite;
+        }
+
+        set
+        {
+            sprite = value;
+        }
+    }
+
+    public ProductType ProductType
+    {
+        get
+        {
+            return productType;
+        }
+
+        set
+        {
+            productType = value;
+        }
+    }
+
+    #endregion
 
     public event EventHandler ProductionComplete;
     public event EventHandler ProductSold;
