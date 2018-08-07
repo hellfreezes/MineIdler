@@ -10,6 +10,12 @@ public class UserInterface : MonoBehaviour {
     [SerializeField]
     GameObject managersWindow;
     [SerializeField]
+    GameObject upgradesWindow;
+    [SerializeField]
+    GameObject achivmentsWindow;
+    [SerializeField]
+    GameObject topscoreWindow;
+    [SerializeField]
     Sprite[] soundSprites;
     [SerializeField]
     Sprite[] musicSprites;
@@ -30,7 +36,32 @@ public class UserInterface : MonoBehaviour {
 
     public void ShowHideManagersWindow()
     {
+        upgradesWindow.SetActive(false);
+        achivmentsWindow.SetActive(false);
+        topscoreWindow.SetActive(false);
         managersWindow.SetActive(!managersWindow.activeSelf);
+    }
+
+    public void ShowHideUpgradesWindow()
+    {
+        managersWindow.SetActive(false);
+        achivmentsWindow.SetActive(false);
+        topscoreWindow.SetActive(false);
+        upgradesWindow.SetActive(!upgradesWindow.activeSelf);
+    }
+    public void ShowHideAhivmentsWindow()
+    {
+        upgradesWindow.SetActive(false);
+        managersWindow.SetActive(false);
+        topscoreWindow.SetActive(false);
+        achivmentsWindow.SetActive(!achivmentsWindow.activeSelf);
+    }
+    public void ShowHideTopscoreWindow()
+    {
+        upgradesWindow.SetActive(false);
+        achivmentsWindow.SetActive(false);
+        managersWindow.SetActive(false);
+        topscoreWindow.SetActive(!topscoreWindow.activeSelf);
     }
 
     void OnMoneyAmountChanged(object source, EventArgs e)

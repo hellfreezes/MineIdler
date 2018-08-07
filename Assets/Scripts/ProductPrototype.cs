@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ProductPrototype {
     public string name;
-    public int sprite;
+    public Sprite sprite;
     public float initialTime;
     public float productCost;
     public float baseCost;

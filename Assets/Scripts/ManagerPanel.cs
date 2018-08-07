@@ -49,7 +49,7 @@ public class ManagerPanel : MonoBehaviour {
         descriptionUI.text = m.Description;
         priceValueUI.text = m.Price.ToString();
 
-        productImageUI.sprite = ProductsController.Instance.GetProsuctSprite(m.ProductType);
+        productImageUI.sprite = ProductsController.Instance.GetProductSprite(m.ProductType);
     }
 
     private void CheckHireAbility()

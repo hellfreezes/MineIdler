@@ -2,28 +2,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public enum ProductType
 {
     PIE = 0,
     BURGER = 1,
     RESTORANT = 2,
-    BUTCHER
+    BUTCHER = 3
 };
 
-public class Product : MonoBehaviour  {
-    RectTransform progressBarUI;
-    Button buyButtonUI;
-    Text numberOfBuildingsTextUI;
-    Text progressTextUI;
-    GameObject coinObject;
-
-
+public class Product {
 
     ProductType productType;
     Sprite sprite;
     string productName;
+
+    // Математические показатели
     float initialTime;
     float productCost;
     float baseCost;
@@ -33,19 +27,16 @@ public class Product : MonoBehaviour  {
 
     float progress;
     float currentBuildingCost;
-
     int numberOfBuildings = 0;
-    float multiplier = 1;
 
-    // Выручка
+    float productPriceMultiplier = 1;
+    float buildingPriceMultiplier = 1;
+    float timeMultiplier = 1;
+
     float moneyOnHand = 0; 
 
     bool inProgress = true;
     bool productionComplete = false;
-
-    // UI
-    float progressBarWidth;
-
 
 
     #region Properties
@@ -56,12 +47,11 @@ public class Product : MonoBehaviour  {
             return initialTime;
         }
 
-        set
+        protected set
         {
             initialTime = value;
         }
     }
-
     public float ProductCost
     {
         get
@@ -69,12 +59,11 @@ public class Product : MonoBehaviour  {
             return productCost;
         }
 
-        set
+        protected set
         {
             productCost = value;
         }
     }
-
     public float BaseCost
     {
         get
@@ -82,12 +71,11 @@ public class Product : MonoBehaviour  {
             return baseCost;
         }
 
-        set
+        protected set
         {
             baseCost = value;
         }
     }
-
     public float Coefficient
     {
         get
@@ -95,12 +83,11 @@ public class Product : MonoBehaviour  {
             return coefficient;
         }
 
-        set
+        protected set
         {
             coefficient = value;
         }
     }
-
     public float InitialProductivity
     {
         get
@@ -108,7 +95,7 @@ public class Product : MonoBehaviour  {
             return initialProductivity;
         }
 
-        set
+        protected set
         {
             initialProductivity = value;
         }
@@ -121,12 +108,11 @@ public class Product : MonoBehaviour  {
             return productName;
         }
 
-        set
+        protected set
         {
             productName = value;
         }
     }
-
     public Sprite Sprite
     {
         get
@@ -134,12 +120,11 @@ public class Product : MonoBehaviour  {
             return sprite;
         }
 
-        set
+        protected set
         {
             sprite = value;
         }
     }
-
     public ProductType ProductType
     {
         get
@@ -147,9 +132,37 @@ public class Product : MonoBehaviour  {
             return productType;
         }
 
-        set
+        protected set
         {
             productType = value;
+        }
+    }
+
+    public float Progress
+    {
+        get
+        {
+            return progress;
+        }
+
+        protected set
+        {
+            progress = value;
+            OnProgressChanged();
+        }
+    }
+    public float CurrentBuildingCost
+    {
+        get
+        {
+            return currentBuildingCost;
+        }
+    }
+    public int NumberOfBuildings
+    {
+        get
+        {
+            return numberOfBuildings;
         }
     }
 
@@ -158,62 +171,47 @@ public class Product : MonoBehaviour  {
     public event EventHandler ProductionComplete;
     public event EventHandler ProductSold;
     public event EventHandler BuildingPurchased;
+    public event EventHandler ProgressChanged;
 
     // Use this for initialization
-    void Start () {
-        InitUIElements();
+    public Product (ProductPrototype proto) {
+        productType = proto.productType;
+        Sprite = proto.sprite;
+        ProductName = proto.name;
+        InitialTime = proto.initialTime;
+        ProductCost = proto.productCost;
+        BaseCost = proto.baseCost;
+        Coefficient = proto.coefficient;
+        InitialProductivity = proto.initialProductivity;
 
-        progressBarWidth = progressBarUI.sizeDelta.x;
-        progress = initialTime;
+        Progress = initialTime;
         currentBuildingCost = baseCost;
         GameManager.Instance.RegisterProduct(this);
         GameManager.Instance.MoneyAmountChanged += OnMoneyAmountChanged;
-        UpdateProgressBarUI();
-        UpdateNumberOfBuildingsUI();
-        CheckForAbilityToBuyBuilding();
-        UpdateButtonUI();
-    }
-
-    void InitUIElements()
-    {
-        progressBarUI = transform.Find("Bar").transform.Find("Progress").GetComponent<RectTransform>();
-        buyButtonUI = transform.Find("Button - Buy").GetComponent<Button>();
-        numberOfBuildingsTextUI = transform.Find("Level").GetComponentInChildren<Text>();
-        progressTextUI = transform.Find("Bar").transform.Find("Progress").GetComponentInChildren<Text>();
-        coinObject = transform.Find("BackGround").transform.Find("Image").gameObject;
     }
 	
 	// Update is called once per frame
-	void Update () {
-        UpdateProgress();
+	public void Update (float deltaTime) {
+        UpdateProgress(deltaTime);
 
-        if (inProgress && progress <= 0)
+        if (inProgress && Progress <= 0)
         {
             ProductionCompleted();
         }
 	}
 
-    void UpdateProgress()
+    void UpdateProgress(float deltaTime)
     {
         if (inProgress && numberOfBuildings > 0)
         {
-            progress -= Time.deltaTime;
-            UpdateProgressBarUI();
+            Progress -= deltaTime;
         }
-    }
-
-    void UpdateProgressBarUI()
-    {
-        Vector2 size = progressBarUI.sizeDelta;
-        size.x = Mathf.Clamp(progressBarWidth - (progressBarWidth * progress / initialTime), 0, progressBarWidth);
-        progressBarUI.sizeDelta = size;
     }
 
     void ProductionCompleted()
     {
         inProgress = false;
         productionComplete = true;
-        coinObject.SetActive(true);
         OnProductionComplete();
     }
 
@@ -235,20 +233,19 @@ public class Product : MonoBehaviour  {
         if (productionComplete)
         {
             AddMoneyToCashBox();
-            coinObject.SetActive(false);
             OnProductSold();
             StartProduction();
         }
     }
 
-    float CalculateReceipt()
+    public float GetProductCost()
     {
-        return productCost * numberOfBuildings * multiplier;
+        return productCost * numberOfBuildings * productPriceMultiplier;
     }
 
     void AddMoneyToCashBox()
     {
-        moneyOnHand += CalculateReceipt();
+        moneyOnHand += GetProductCost();
     }
 
     protected virtual void OnProductSold()
@@ -263,22 +260,19 @@ public class Product : MonoBehaviour  {
     {
         productionComplete = false;
         inProgress = true;
-        progress = initialTime;
+        Progress = initialTime * timeMultiplier;
     }
 
     void OnMoneyAmountChanged(object source, EventArgs e)
     {
-        CheckForAbilityToBuyBuilding();
+        
     }
 
-    void CheckForAbilityToBuyBuilding()
+    protected virtual void OnProgressChanged()
     {
-        if (GameManager.Instance.EnoughMoney(currentBuildingCost))
+        if (ProgressChanged != null)
         {
-            buyButtonUI.interactable = true;
-        } else
-        {
-            buyButtonUI.interactable = false;
+            ProgressChanged(this, EventArgs.Empty);
         }
     }
 
@@ -299,7 +293,13 @@ public class Product : MonoBehaviour  {
         }
     }
 
-    void OnBuildingPurchased()
+    void AddBuilding(int amount)
+    {
+        numberOfBuildings += amount;
+        currentBuildingCost = GetBuildingCost();
+    }
+
+    protected virtual void OnBuildingPurchased()
     {
         if (BuildingPurchased != null)
         {
@@ -307,33 +307,13 @@ public class Product : MonoBehaviour  {
         }
     }
 
-    void AddBuilding(int amount)
+    public float GetBuildingCost()
     {
-        numberOfBuildings += amount;
-        currentBuildingCost = CalculateCost();
-        UpdateNumberOfBuildingsUI();
-        UpdateButtonUI();
-        UpdateProgressTextUI();
+        return baseCost * Mathf.Pow(coefficient, numberOfBuildings) * buildingPriceMultiplier;
     }
 
-    void UpdateButtonUI()
+    public float GetWidthProgress(float width)
     {
-        Text t = buyButtonUI.GetComponentInChildren<Text>();
-        t.text = "Купить " + GameManager.Instance.BuyStep.ToString() + " за $" + (currentBuildingCost * GameManager.Instance.BuyStep).ToString("#.##");
-    }
-
-    void UpdateProgressTextUI()
-    {
-        progressTextUI.text = CalculateReceipt().ToString("#.##");
-    }
-
-    void UpdateNumberOfBuildingsUI()
-    {
-        numberOfBuildingsTextUI.text = numberOfBuildings.ToString();
-    }
-
-    float CalculateCost()
-    {
-        return baseCost * Mathf.Pow(coefficient, numberOfBuildings);
+        return width - (width * Progress / InitialTime);
     }
 }

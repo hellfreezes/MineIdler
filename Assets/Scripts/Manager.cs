@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class Manager {
     GameObject panel;
@@ -145,7 +144,6 @@ public class Manager {
         sprite = prototype.sprite;
         managerName = prototype.managerName;
         description = prototype.description;
-
         productName = prototype.productName;
         productType = prototype.productType;
         price = prototype.price;
