@@ -60,6 +60,11 @@ public class GameManager : MonoBehaviour {
         ProductsController.Instance.Init();
         ManagersController.Instance.Init();
         AddMoneyAmount(startMoney);
+
+        Money mo = new Money(1, 1);
+        Money mo2 = new Money(100000000, 0);
+        mo.Plus(mo2);
+        //Debug.Log(mo.ToString());
     }
 
     // Update is called once per frame
