@@ -18,14 +18,13 @@ using UnityEngine;
 public class Money {
     int step;
 
-    double[] values;
+    float[] values;
 
     string[] name = new string[] { "", "миллиардов", "триллионов" };
-    const double MAX_VALUE0 = 999999999.99;
-    const double MAX_VALUE1 = 999.999999;
+    const float MAX_VALUE = 999.999999f;
     const int MAX_STEP = 1000;
 
-    public double[] Values
+    public float[] Values
     {
         get { return values; }
     }
@@ -35,39 +34,117 @@ public class Money {
         get { return step; }
     }
 
-    public Money(double value, int step)
+    public Money(float value, int step)
     {
-        this.values = new double[MAX_STEP];
+        Debug.LogError("Неправильно создаются объекты. При создании если step больше нуля надо дробную часть откидывать в другое поколение");
+        if (value > MAX_VALUE)
+        {
+            Debug.LogError("Значение поколения не может превышать " + MAX_VALUE + ". Присвоено максимальное значение.");
+            value = MAX_VALUE;
+        }
+
+        this.values = new float[MAX_STEP];
         this.step = step;
 
-        this.values[0] = MAX_VALUE0;
-        if (step > 0)
-        {
-            for (int i = 1; i < step; i++)
-            {
-                this.values[i] = MAX_VALUE1;
-            }
-        }
         this.values[step] = value;
     }
 
-    public void Plus(Money v)
+    public void Mult(Money v)
     {
-        double rest = 0;
-        for (int i = 0; i < MAX_STEP; i++)
+        float rest = 0;
+        int maxStep = Mathf.Max(step, v.Step);
+        for (int i = 0; i <= maxStep; i++)
         {
-            if (rest == 0 && values[i] == 0 && v.values[i] == 0)
+            step = i; // динамическое увеличение покаления
+
+            values[i] += v.values[i] + rest; // складываем одинаковые поколения чисел и прибавляем остаток с предыдущего поколения
+            rest = 0; // Обнуляем остаток
+            if (values[i] > MAX_VALUE) // Формируем остаток если поколение вышло за пределы допустимого
             {
-                break;
+                rest = Mathf.Floor(values[i] / Mathf.Pow(10, 3)); // этот остаток пойдет в новое поколение
+                values[i] = values[i] - MAX_VALUE; // это значение остается в текущем поколении
             }
-            values[i] += v.values[i];
-            if (i > 0 && values[i] > MAX_VALUE0)
+            if (rest != 0 && i == maxStep) // Если обработали все поколения складываемых объектов, а остаток еще есть
+                maxStep++; // Увеличиваем поколение объекта, чтобы перенести в него остаток
+        }
+    }
+
+    public void Subt(Money v)
+    {
+        int maxStep = Mathf.Max(step, v.Step);
+        for (int i = maxStep; i >= 0; i--)
+        {
+            values[i] -= v.Values[i];
+            if (values[i] < 0)
             {
-                rest = values[i] - MAX_VALUE0;
-                values[i] = MAX_VALUE0;
-                //rest = rest / 100000000; неправильно
+                values[i + 1]--;
+                values[i] = 1000 - Mathf.Abs(values[i]);
+                if (values[i + 1] == 0)
+                    step--;
             }
         }
+    }
+
+    public void Add(float index)
+    {
+        float rest = 0;
+        int maxStep = step;
+        for (int i = 0; i <= maxStep; i++)
+        {
+            step = i; // динамическое увеличение покаления
+
+            values[i] = (values[i] * index) + rest; // умножаем последовательно каждое поколение и прибавляем остаток с предыдущего поколения
+            rest = 0; // Обнуляем остаток
+            if (values[i] > MAX_VALUE) // Формируем остаток если поколение вышло за пределы допустимого
+            {
+                rest = Mathf.Floor(values[i] / Mathf.Pow(10, 3)); // этот остаток пойдет в новое поколение
+                values[i] = GetMaxValueInStep(values[i]); // это значение остается в текущем поколении
+            }
+            if (rest != 0 && i == maxStep) // Если обработали все поколения складываемых объектов, а остаток еще есть
+                maxStep++; // Увеличиваем поколение объекта, чтобы перенести в него остаток
+        }
+    }
+
+    public void Div(float index)
+    {
+        int maxStep = step;
+        float rest = 0;
+        float un = 0;
+        for (int i = maxStep; i >= 0; i--)
+        {
+            values[i] = (values[i]/index) + rest;
+            un = (float)Math.Truncate(values[i]);
+            rest = values[i] - un;
+            if (rest > 0) // Нужно не на ноль проверять а на остаток после запятой!!!!
+            {
+                rest *= 1000;
+                values[i] = un;
+
+                if (un == 0)
+                {
+                    step--;
+                }
+            }
+        }
+    }
+
+    float GetMaxValueInStep(float val)
+    {
+        string s = val.ToString();
+        int i = s.IndexOf(".");
+        i = i == -1 ? s.Length : i;
+        s = s.Remove(0, i - 3);
+        return float.Parse(s);
+    }
+
+    public string GetValue()
+    {
+        double v = values[Step];
+        if (Step > 0)
+            v += values[Step - 1] / Mathf.Pow(10, 3);
+        if (Step > 1)
+            v += values[Step - 2] / Mathf.Pow(10, 6);
+        return v.ToString() + " поколение №" + Step; 
     }
 
     //public override string ToString()

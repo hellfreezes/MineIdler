@@ -61,10 +61,10 @@ public class GameManager : MonoBehaviour {
         ManagersController.Instance.Init();
         AddMoneyAmount(startMoney);
 
-        Money mo = new Money(1, 1);
-        Money mo2 = new Money(100000000, 0);
-        mo.Plus(mo2);
-        //Debug.Log(mo.ToString());
+        Money mo = new Money(1.00010f, 1);
+        Money mo2 = new Money(1f, 1);
+        mo2.Div(2);
+        Debug.Log(mo2.GetValue());
     }
 
     // Update is called once per frame
