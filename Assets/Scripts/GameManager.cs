@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviour {
 
     int buyStep = 1;
 
-    float money = 0;
+    Money money;
 
     Dictionary<string, Product> products;
 
@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour {
         get { return instance;  }
     }
 
-    public float Money
+    public Money Money
     {
         get
         {
@@ -59,12 +59,14 @@ public class GameManager : MonoBehaviour {
     {
         ProductsController.Instance.Init();
         ManagersController.Instance.Init();
+        
+        money = new Money(startMoney, 0);
         AddMoneyAmount(startMoney);
 
-        Money mo = new Money(1.00010f, 1);
-        Money mo2 = new Money(1f, 1);
-        mo2.Div(2);
-        Debug.Log(mo2.GetValue());
+        //Money mo = new Money(9.125f, 1);
+        //Money mo2 = new Money(9.25f, 1);
+        //float res = mo.Div(mo2);
+        //Debug.Log(mo.IsGreaterThen(mo2));
     }
 
     // Update is called once per frame
@@ -72,14 +74,9 @@ public class GameManager : MonoBehaviour {
 		
 	}
 
-    public bool EnoughMoney(float amount)
+    public bool EnoughMoney(Money amount)
     {
-        if (money >= amount)
-        {
-            return true;
-        }
-
-        return false;
+        return (money.IsGreaterThen(amount) || money.IsEqual(amount));
     }
 
     public void RegisterProduct(Product newProduct)
@@ -102,22 +99,28 @@ public class GameManager : MonoBehaviour {
         OnMoneyAmountChanged();
     }
 
-    void AddMoneyAmount(float amount)
+    void AddMoneyAmount(Money amount)
     {
-        money += amount;
+        money.Mult(amount);
         OnMoneyAmountChanged();
     }
 
-    public void AddMoney(float amount)
+    void AddMoneyAmount(float amount)
+    {
+        money.Mult(amount);
+        OnMoneyAmountChanged();
+    }
+
+    public void AddMoney(Money amount)
     {
         AddMoneyAmount(amount);
     }
 
-    public void SpendMoney(float amount)
+    public void SpendMoney(Money amount)
     {
-        if (money >= amount)
+        if (money.IsGreaterThen(amount) || money.IsEqual(amount))
         {
-            money -= amount;
+            money.Subt(amount);
             OnMoneyAmountChanged();
         }
     }

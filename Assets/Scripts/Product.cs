@@ -19,14 +19,16 @@ public class Product {
 
     // Математические показатели
     float initialTime;
-    float productCost;
-    float baseCost;
+
+    Money productCost;
+    Money baseCost;
+
     float coefficient;
     float initialProductivity;
 
 
     float progress;
-    float currentBuildingCost;
+    Money currentBuildingCost;
     int numberOfBuildings = 0;
 
     float productPriceMultiplier = 1;
@@ -52,7 +54,7 @@ public class Product {
             initialTime = value;
         }
     }
-    public float ProductCost
+    public Money ProductCost
     {
         get
         {
@@ -64,7 +66,7 @@ public class Product {
             productCost = value;
         }
     }
-    public float BaseCost
+    public Money BaseCost
     {
         get
         {
@@ -151,7 +153,7 @@ public class Product {
             OnProgressChanged();
         }
     }
-    public float CurrentBuildingCost
+    public Money CurrentBuildingCost
     {
         get
         {
@@ -307,7 +309,7 @@ public class Product {
         }
     }
 
-    public float GetBuildingCost()
+    public Money GetBuildingCost()
     {
         return baseCost * Mathf.Pow(coefficient, numberOfBuildings) * buildingPriceMultiplier;
     }

@@ -7,7 +7,7 @@ public class Manager {
     GameObject panel;
     Product product;
     ProductType productType;
-    float price;
+    Money price;
    
     string productName;
     string managerName;
@@ -32,7 +32,7 @@ public class Manager {
         }
     }
 
-    public float Price
+    public Money Price
     {
         get
         {

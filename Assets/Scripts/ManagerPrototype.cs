@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class ManagerPrototype {
 
-    public float price;
+    public Money price;
     public Sprite sprite;
 
     public string productName;
@@ -14,7 +14,7 @@ public class ManagerPrototype {
 
     public ProductType productType;
 
-    public ManagerPrototype(string managerName, string description, string productName, float price, Sprite sprite, ProductType productType)
+    public ManagerPrototype(string managerName, string description, string productName, Money price, Sprite sprite, ProductType productType)
     {
         this.managerName = managerName;
         this.description = description;
