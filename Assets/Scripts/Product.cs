@@ -19,27 +19,27 @@ public class Product {
 
     // Математические показатели
     float initialTime;
-
     Money productCost;
     Money baseCost;
-
     float coefficient;
     float initialProductivity;
 
-
+    // --- xml
     float progress;
     Money currentBuildingCost;
+    Money currentProductCost;
     int numberOfBuildings = 0;
 
     float productPriceMultiplier = 1;
     float buildingPriceMultiplier = 1;
     float timeMultiplier = 1;
 
-    float moneyOnHand = 0; 
+    Money moneyOnHand = new Money(0,0); 
 
     bool inProgress = true;
     bool productionComplete = false;
 
+    // --- xml
 
     #region Properties
     public float InitialTime
@@ -187,7 +187,8 @@ public class Product {
         InitialProductivity = proto.initialProductivity;
 
         Progress = initialTime;
-        currentBuildingCost = baseCost;
+        currentBuildingCost = (new Money(0,0)).Add(baseCost);
+        currentProductCost = (new Money(0, 0)).Add(productCost);
         GameManager.Instance.RegisterProduct(this);
         GameManager.Instance.MoneyAmountChanged += OnMoneyAmountChanged;
     }
@@ -240,14 +241,21 @@ public class Product {
         }
     }
 
-    public float GetProductCost()
+    public Money GetProductCost()
     {
-        return productCost * numberOfBuildings * productPriceMultiplier;
+        return currentProductCost;
+    }
+
+    public Money CalculateProductCost()
+    {
+        //return productCost * numberOfBuildings * productPriceMultiplier;
+        Money m = productCost.Clone(); // чтобы не изменять базовое значение
+        return m.Mult(numberOfBuildings).Mult(productPriceMultiplier);
     }
 
     void AddMoneyToCashBox()
     {
-        moneyOnHand += GetProductCost();
+        moneyOnHand = GetProductCost().Add(moneyOnHand);
     }
 
     protected virtual void OnProductSold()
@@ -278,10 +286,10 @@ public class Product {
         }
     }
 
-    public float GetAllMoney()
+    public Money GetAllMoney()
     {
-        float toSend = moneyOnHand;
-        moneyOnHand = 0;
+        Money toSend = moneyOnHand;
+        moneyOnHand = new Money(0,0);
         return toSend;
     }
 
@@ -299,6 +307,7 @@ public class Product {
     {
         numberOfBuildings += amount;
         currentBuildingCost = GetBuildingCost();
+        currentProductCost = CalculateProductCost();
     }
 
     protected virtual void OnBuildingPurchased()
@@ -311,7 +320,8 @@ public class Product {
 
     public Money GetBuildingCost()
     {
-        return baseCost * Mathf.Pow(coefficient, numberOfBuildings) * buildingPriceMultiplier;
+        Money m = baseCost.Clone(); // чтобы не изменять базовое значение
+        return m.Mult(Mathf.Pow(coefficient, numberOfBuildings)).Mult(buildingPriceMultiplier);
     }
 
     public float GetWidthProgress(float width)

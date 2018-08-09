@@ -49,16 +49,16 @@ public class ManagersController : MonoBehaviour {
         prototypes = new List<ManagerPrototype>();
 
         ManagerPrototype m = new ManagerPrototype("Скрудж", "Профессиональный продавец пирогов. Найми его и жизнь станет проще.", 
-                                                    "Pie", 2000f, managerSprites[0], ProductType.PIE);
+                                                    "Pie", new Money(2,0), managerSprites[0], ProductType.PIE);
         prototypes.Add(m);
         m = new ManagerPrototype("Джулес Винфилд", "Этот мужик знает толк в бургерах!",
-                                                    "Burger", 15000f, managerSprites[1], ProductType.BURGER);
+                                                    "Burger", new Money(15, 0), managerSprites[1], ProductType.BURGER);
         prototypes.Add(m);
         m = new ManagerPrototype("Джейми Оливер", "Ресторан Джейми может приготовить вам ужин за 30 минут!",
-                                                    "Restorant", 100000f, managerSprites[2], ProductType.RESTORANT);
+                                                    "Restorant", new Money(100, 0), managerSprites[2], ProductType.RESTORANT);
         prototypes.Add(m);
         m = new ManagerPrototype("Декстер Морган", "Профессиональный мясник!",
-                                                    "Butcher", 500000f, managerSprites[3], ProductType.BUTCHER);
+                                                    "Butcher", new Money(500, 0), managerSprites[3], ProductType.BUTCHER);
         prototypes.Add(m);
     }
 

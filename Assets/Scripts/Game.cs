@@ -1,11 +1,14 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour {
-    [SerializeField]
-    float startMoney = 0.004f;
+public class Game {
+    static Game instance;
+    public static Game Instance
+    {
+        get { return instance; }
+    }
 
     int buyStep = 1;
 
@@ -13,42 +16,14 @@ public class GameManager : MonoBehaviour {
 
     Dictionary<string, Product> products;
 
-    static GameManager instance;
-
     public event EventHandler MoneyAmountChanged;
 
-    public static GameManager Instance
+    public Game()
     {
-        get { return instance;  }
-    }
-
-    public Money Money
-    {
-        get
-        {
-            return money;
-        }
-    }
-
-    public int BuyStep
-    {
-        get
-        {
-            return buyStep;
-        }
-
-        set
-        {
-            buyStep = value;
-        }
-    }
-
-    // Use this for initialization
-    void OnEnable () {
         if (instance != null)
         {
-            Debug.LogError("Менеджер игры не один на сцене!");
-            Destroy(gameObject);
+            Debug.LogError("Попытка создать еще второй экземпляр Game на сцене");
+            instance = null;
         }
         instance = this;
 
@@ -56,27 +31,8 @@ public class GameManager : MonoBehaviour {
         products = new Dictionary<string, Product>();
     }
 
-    private void Start()
-    {
-        ProductsController.Instance.Init();
-        ManagersController.Instance.Init();
-        
-        AddMoneyAmount(startMoney);
-
-        //Money mo = new Money(9.125f, 1);
-        //Money mo2 = new Money(9.25f, 1);
-        //float res = mo.Div(mo2);
-        //Debug.Log(mo.IsGreaterThen(mo2));
-    }
-
-    // Update is called once per frame
-    void Update () {
-		
-	}
-
     public bool EnoughMoney(Money amount)
     {
-        //Debug.Log(amount.ToString() + "&&" + money.ToString());
         return (money.IsGreaterThen(amount) || money.IsEqual(amount));
     }
 
@@ -84,7 +40,6 @@ public class GameManager : MonoBehaviour {
     {
         if (newProduct != null)
         {
-            //Debug.Log("Добавлен продукт: " + newProduct.ProductName);
             products.Add(newProduct.ProductName, newProduct);
             newProduct.ProductSold += OnProductSold;
             newProduct.ProductSold += SoundController.Instance.OnProductSold;
@@ -139,7 +94,8 @@ public class GameManager : MonoBehaviour {
         if (products.ContainsKey(name))
         {
             return products[name];
-        } else
+        }
+        else
         {
             Debug.LogError("products не содержит ключа '" + name + "'");
             return null;

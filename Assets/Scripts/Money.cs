@@ -16,11 +16,12 @@ using UnityEngine;
  * их начиная с нулевого покаления. Остальные операции по аналогии со сложением
  */
 public class Money {
+    // -- xml
     int step;
-
     float[] values;
+    // -- xml
 
-    string[] name = new string[] { "", "миллиардов", "триллионов" };
+    string[] name = new string[] { "", "a", "b", "ab", "bb", "c", "ac", "aac", "bc", "abc", "aabc", "bbc" };
     const float MAX_VALUE = 999.999999f; // максимальное значения числа в поколении
     const int ZEROS = 3; // количество отбрасываемых нулей
     const int MAX_STEP = 1000; // количество поколений
@@ -74,10 +75,16 @@ public class Money {
         }
     }
 
+    public Money Clone()
+    {
+        Money newM = (new Money(0, 0)).Add(this);
+        return newM;
+    }
+
     /// <summary>
     /// Сложение
     /// </summary>
-    public void Mult(Money v)
+    public Money Add(Money v)
     {
         float rest = 0;
         int maxStep = Mathf.Max(step, v.Step);
@@ -95,12 +102,14 @@ public class Money {
             if (rest != 0 && i == maxStep) // Если обработали все поколения складываемых объектов, а остаток еще есть
                 maxStep++; // Увеличиваем поколение объекта, чтобы перенести в него остаток
         }
+
+        return this;
     }
 
     /// <summary>
     /// Сложение с числом
     /// </summary>
-    public void Mult(float val)
+    public Money Add(float val)
     {
         float rest = 0;
         int maxStep = 0;
@@ -118,12 +127,14 @@ public class Money {
             if (rest != 0 && i == maxStep) // Если обработали все поколения складываемых объектов, а остаток еще есть
                 maxStep++; // Увеличиваем поколение объекта, чтобы перенести в него остаток
         }
+
+        return this;
     }
 
     /// <summary>
     /// Вычитание
     /// </summary>
-    public void Subt(Money v)
+    public Money Subt(Money v)
     {
         int maxStep = Mathf.Max(step, v.Step);
         for (int i = maxStep; i >= 0; i--) // Проверяем все поколения начиная с самого молодого
@@ -138,12 +149,14 @@ public class Money {
                     step--;
             }
         }
+
+        return this;
     }
 
     /// <summary>
     /// Уможение
     /// </summary>
-    public void Add(float index)
+    public Money Mult(float index)
     {
         float rest = 0;
         int maxStep = step;
@@ -161,12 +174,14 @@ public class Money {
             if (rest != 0 && i == maxStep) // Если обработали все поколения складываемых объектов, а остаток еще есть
                 maxStep++; // Увеличиваем поколение объекта, чтобы перенести в него остаток
         }
+
+        return this;
     }
 
     /// <summary>
     /// Деление на число
     /// </summary>
-    public void Div(float index)
+    public Money Div(float index)
     {
         int maxStep = step;
         float rest = 0;
@@ -187,6 +202,8 @@ public class Money {
                 }
             }
         }
+
+        return this;
     }
 
     /// <summary>
@@ -261,9 +278,14 @@ public class Money {
     /// Целое число поколение и до двух поколений после запятой
     /// 999.999 999
     /// </summary>
-    float GetValueWithPoint(Money v)
+    float GetValueWithPoint(Money val)
     {
-        return GetValueWithPoint(v);
+        float v = val.values[val.Step];
+        if (val.Step > 0)
+            v += val.values[val.Step - 1] / Mathf.Pow(10, ZEROS);
+        if (val.Step > 1)
+            v += val.values[val.Step - 2] / Mathf.Pow(10, ZEROS * 2);
+        return v;
     }
 
     /// <summary>
@@ -280,9 +302,26 @@ public class Money {
         return v.ToString() + " поколение №" + Step; 
     }
 
-    //public override string ToString()
-    //{
-    //    //string pSpecifier = String.Format("{0}{1}", "N", 0);
-    //    //return values[step].ToString(pSpecifier) + " " + name[step];
-    //}
+    public override string ToString()
+    {
+        //string pSpecifier = String.Format("{0}{1}", "N", 0);
+        //return values[step].ToString(pSpecifier) + " " + name[step];
+
+        double v = values[Step];
+        if (Step > 0)
+            v += values[Step - 1] / Mathf.Pow(10, ZEROS);
+        if (Step > 1)
+            v += values[Step - 2] / Mathf.Pow(10, ZEROS * 2);
+
+        string format = "#.###";
+
+        switch (Step) {
+            case 0:
+                v *= 1000;
+                format = "#.##";
+                break;
+        }
+
+        return v.ToString(format) + " " + name[Step];// + " поколение №" + Step;
+    }
 }

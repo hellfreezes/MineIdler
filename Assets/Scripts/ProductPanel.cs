@@ -81,12 +81,12 @@ public class ProductPanel : MonoBehaviour {
     void UpdateButtonUI()
     {
         Text t = buyButtonUI.GetComponentInChildren<Text>();
-        t.text = "Купить " + GameManager.Instance.BuyStep.ToString() + " за $" + (product.CurrentBuildingCost * GameManager.Instance.BuyStep).ToString("#.##");
+        t.text = "Купить " + GameManager.Instance.BuyStep.ToString() + " за $" + (product.CurrentBuildingCost.ToString());// ("#.##"); Mult(GameManager.Instance.BuyStep))
     }
 
     void UpdateProgressTextUI()
     {
-        progressTextUI.text = product.GetProductCost().ToString("#.##");
+        progressTextUI.text = product.GetProductCost().ToString();// ("#.##");
     }
 
     void UpdateNumberOfBuildingsUI()

@@ -27,7 +27,9 @@ public class UserInterface : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         GameManager.Instance.MoneyAmountChanged += OnMoneyAmountChanged;
-	}
+        OnMoneyAmountChanged(GameManager.Instance, EventArgs.Empty);
+
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -67,11 +69,7 @@ public class UserInterface : MonoBehaviour {
     void OnMoneyAmountChanged(object source, EventArgs e)
     {
         GameManager gameManager = (GameManager)source;
-        string money = gameManager.Money.ToString("#.##");
-        if (gameManager.Money < 1)
-        {
-            money = "0" + money;
-        } 
+        string money = gameManager.Money.ToString();// ("#.##");
         moneyAmountText.text = money;
     }
 

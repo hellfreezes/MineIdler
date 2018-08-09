@@ -60,8 +60,8 @@ public class ProductsController : MonoBehaviour {
         p.productType = ProductType.PIE;
         p.sprite = sprites[0];
         p.initialTime = 0.6f;
-        p.productCost = 1;
-        p.baseCost = 4;
+        p.productCost = new Money(0.001f, 0);//  1;
+        p.baseCost = new Money(0.004f, 0);//4;
         p.coefficient = 1.07f;
         p.initialProductivity = 1.67f;
         productsPrototypes.Add(p);
@@ -71,8 +71,8 @@ public class ProductsController : MonoBehaviour {
         p.productType = ProductType.BURGER;
         p.sprite = sprites[1];
         p.initialTime = 3f;
-        p.productCost = 60;
-        p.baseCost = 60;
+        p.productCost = new Money(0.06f, 0);//60;
+        p.baseCost = new Money(0.06f, 0);//60;
         p.coefficient = 1.15f;
         p.initialProductivity = 20f;
         productsPrototypes.Add(p);
@@ -82,8 +82,8 @@ public class ProductsController : MonoBehaviour {
         p.productType = ProductType.RESTORANT;
         p.sprite = sprites[2];
         p.initialTime = 6f;
-        p.productCost = 540;
-        p.baseCost = 720;
+        p.productCost = new Money(0.54f, 0);//540;
+        p.baseCost = new Money(0.72f, 0);//720;
         p.coefficient = 1.14f;
         p.initialProductivity = 20f;
         productsPrototypes.Add(p);
@@ -93,8 +93,8 @@ public class ProductsController : MonoBehaviour {
         p.productType = ProductType.BUTCHER;
         p.sprite = sprites[3];
         p.initialTime = 12f;
-        p.productCost = 4320;
-        p.baseCost = 8640;
+        p.productCost = new Money(4.32f, 0);//4320;
+        p.baseCost = new Money(8.64f, 0);// 8640;
         p.coefficient = 1.13f;
         p.initialProductivity = 360f;
         productsPrototypes.Add(p);
