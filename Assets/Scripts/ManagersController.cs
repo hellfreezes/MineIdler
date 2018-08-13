@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,7 +13,7 @@ public class ManagersController : MonoBehaviour {
     Sprite[] managerSprites;
 
     List<ManagerPrototype> prototypes;
-    List<Manager> managers;
+    Dictionary<ProductType, Manager> managers;
 
     static ManagersController instance;
     public static ManagersController Instance
@@ -38,7 +39,7 @@ public class ManagersController : MonoBehaviour {
 
     public void Init()
     {
-        managers = new List<Manager>();
+        managers = new Dictionary<ProductType, Manager>();
         CreateManagersPrototypes();
         CreateManagersAndUI();
     }
@@ -67,7 +68,7 @@ public class ManagersController : MonoBehaviour {
         foreach(ManagerPrototype p in prototypes)
         {
             Manager m = new Manager(p);
-            managers.Add(m);
+            managers.Add(p.productType, m);
 
 
             GameObject panel = Instantiate(managerPanelPrefab);
@@ -79,9 +80,27 @@ public class ManagersController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		foreach(Manager m in managers)
+        foreach (Manager m in managers.Values)
         {
             m.Update(Time.deltaTime);
         }
 	}
+
+    public Manager GetManagerOfType(ProductType type)
+    {
+        if (managers.ContainsKey(type))
+        {
+            return managers[type];
+        }
+        else
+        {
+            Debug.LogError("managers не содержит ключа '" + type + "'");
+            return null;
+        }
+    }
+
+    public Manager[] GetManagers()
+    {
+        return managers.Values.ToArray();
+    }
 }

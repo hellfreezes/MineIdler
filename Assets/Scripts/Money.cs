@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
 using UnityEngine;
 
 /*
@@ -15,7 +18,8 @@ using UnityEngine;
  * Операции сложения должны определять покаления складываемых чисел и последовательно увеличивать 
  * их начиная с нулевого покаления. Остальные операции по аналогии со сложением
  */
-public class Money {
+public class Money : IXmlSerializable
+{
     // -- xml
     int step;
     float[] values;
@@ -324,4 +328,42 @@ public class Money {
 
         return v.ToString(format) + " " + name[Step];// + " поколение №" + Step;
     }
+
+    #region IXmlSerializable
+    public XmlSchema GetSchema()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void ReadXml(XmlReader reader)
+    {
+        values = new float[MAX_STEP];
+
+        step = int.Parse(reader.GetAttribute("Step"));
+
+        if (reader.ReadToFollowing("Value"))
+        {
+            do
+            {
+                int s = int.Parse(reader.GetAttribute("step"));
+                values[s] = float.Parse(reader.GetAttribute("value"));
+
+            } while (reader.ReadToNextSibling("Value"));
+        }
+    }
+
+    public void WriteXml(XmlWriter writer)
+    {
+        writer.WriteAttributeString("Step", Step.ToString());
+        writer.WriteStartElement("Values");
+        for (int i = Step; i >= 0; i--)
+        {
+            writer.WriteStartElement("Value");
+            writer.WriteAttributeString("step", i.ToString());
+            writer.WriteAttributeString("value", values[i].ToString());
+            writer.WriteEndElement();
+        }
+        writer.WriteEndElement();
+    }
+    #endregion
 }

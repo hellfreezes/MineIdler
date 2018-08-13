@@ -1,104 +1,78 @@
 ﻿using System.Collections;
-using System;
 using System.Collections.Generic;
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
 using UnityEngine;
 
-public class Game {
-    static Game instance;
-    public static Game Instance
+public class Game : IXmlSerializable {
+    //private static Game instance;
+    //public static Game Instance
+    //{
+    //    get { return instance; }
+    //}
+
+    //public Game()
+    //{
+    //    if (instance != null)
+    //    {
+    //        Debug.LogError("Дублирование Game. Удаляю ссылку и заменяю на ссылку на новый объект! Выяснить в чем причина.");
+    //    }
+    //    instance = this;
+    //}
+
+    #region IXmlSerializable
+    public XmlSchema GetSchema()
     {
-        get { return instance; }
+        throw new System.NotImplementedException();
     }
 
-    int buyStep = 1;
-
-    Money money;
-
-    Dictionary<string, Product> products;
-
-    public event EventHandler MoneyAmountChanged;
-
-    public Game()
+    public void ReadXml(XmlReader reader)
     {
-        if (instance != null)
+        reader.ReadToFollowing("Funds");
+        Funds.Instance.ReadXml(reader);
+        reader.ReadToFollowing("Products");
+        reader.ReadToDescendant("Product");
+        do
         {
-            Debug.LogError("Попытка создать еще второй экземпляр Game на сцене");
-            instance = null;
-        }
-        instance = this;
+            ProductType productType = (ProductType)int.Parse(reader.GetAttribute("ProductType"));
+            ProductsController.Instance.GetProductFromList(productType).ReadXml(reader);
 
-        money = new Money(0, 0);
-        products = new Dictionary<string, Product>();
-    }
-
-    public bool EnoughMoney(Money amount)
-    {
-        return (money.IsGreaterThen(amount) || money.IsEqual(amount));
-    }
-
-    public void RegisterProduct(Product newProduct)
-    {
-        if (newProduct != null)
+        } while (reader.ReadToFollowing("Product"));
+        reader.ReadToFollowing("Managers");
+        reader.ReadToDescendant("Manager");
+        do
         {
-            products.Add(newProduct.ProductName, newProduct);
-            newProduct.ProductSold += OnProductSold;
-            newProduct.ProductSold += SoundController.Instance.OnProductSold;
-            newProduct.BuildingPurchased += SoundController.Instance.OnBuy;
-        }
+            ProductType productType = (ProductType)int.Parse(reader.GetAttribute("ProductType"));
+            Debug.Log(productType);
+            ManagersController.Instance.GetManagerOfType(productType).ReadXml(reader);
+
+        } while (reader.ReadToFollowing("Manager"));
     }
 
-    void OnProductSold(object source, EventArgs e)
+    public void WriteXml(XmlWriter writer)
     {
-        Product product = (Product)source;
-        AddMoneyAmount(product.GetAllMoney());
-
-        OnMoneyAmountChanged();
-    }
-
-    void AddMoneyAmount(Money amount)
-    {
-        money.Add(amount);
-        OnMoneyAmountChanged();
-    }
-
-    void AddMoneyAmount(float amount)
-    {
-        money.Add(amount);
-        OnMoneyAmountChanged();
-    }
-
-    public void AddMoney(Money amount)
-    {
-        AddMoneyAmount(amount);
-    }
-
-    public void SpendMoney(Money amount)
-    {
-        if (money.IsGreaterThen(amount) || money.IsEqual(amount))
+        writer.WriteStartElement("Funds");
+        Funds.Instance.WriteXml(writer);
+        writer.WriteEndElement();
+        writer.WriteStartElement("Products");
+        foreach (Product product in ProductsController.Instance.GetProducts())
         {
-            money.Subt(amount);
-            OnMoneyAmountChanged();
+            writer.WriteStartElement("Product");
+            writer.WriteAttributeString("ProductType", ((int)product.ProductType).ToString());
+            product.WriteXml(writer);
+            writer.WriteEndElement();
         }
-    }
-
-    protected virtual void OnMoneyAmountChanged()
-    {
-        if (MoneyAmountChanged != null)
+        writer.WriteEndElement();
+        writer.WriteStartElement("Managers");
+        foreach (Manager manager in ManagersController.Instance.GetManagers())
         {
-            MoneyAmountChanged(this, EventArgs.Empty);
+            writer.WriteStartElement("Manager");
+            writer.WriteAttributeString("ProductType", ((int)manager.ProductType).ToString());
+            manager.WriteXml(writer);
+            writer.WriteEndElement();
         }
+        writer.WriteEndElement();
     }
-
-    public Product GetProductFromList(string name)
-    {
-        if (products.ContainsKey(name))
-        {
-            return products[name];
-        }
-        else
-        {
-            Debug.LogError("products не содержит ключа '" + name + "'");
-            return null;
-        }
-    }
+    #endregion
 }

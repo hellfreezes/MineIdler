@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
 using UnityEngine;
 
-public class Manager {
+public class Manager : IXmlSerializable {
     GameObject panel;
     Product product;
     ProductType productType;
@@ -152,8 +155,8 @@ public class Manager {
     public void Hire()
     {
         //Debug.Log(managerName + " нанят");
-        product = GameManager.Instance.GetProductFromList(productName);
-        GameManager.Instance.SpendMoney(price);
+        product = ProductsController.Instance.GetProductFromList(productType);
+        Funds.Instance.SpendMoney(price);
         isActive = true;
         product.ProductionComplete += OnProductionComplete;
         product.SellAll(); // запускаем первый раз на случай если есть что продать
@@ -167,4 +170,26 @@ public class Manager {
             Hired(this, EventArgs.Empty);
         }
     }
+
+    #region IXmlSerializable
+    public XmlSchema GetSchema()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void ReadXml(XmlReader reader)
+    {
+        isActive = bool.Parse(reader.GetAttribute("IsActive"));
+
+        product = ProductsController.Instance.GetProductFromList(productType);
+        product.ProductionComplete += OnProductionComplete;
+        product.SellAll(); // запускаем первый раз на случай если есть что продать
+        OnHired();
+    }
+
+    public void WriteXml(XmlWriter writer)
+    {
+        writer.WriteAttributeString("IsActive", isActive.ToString());
+    }
+    #endregion
 }

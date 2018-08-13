@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
 using UnityEngine;
 
 public enum ProductType
@@ -11,7 +14,7 @@ public enum ProductType
     BUTCHER = 3
 };
 
-public class Product {
+public class Product : IXmlSerializable {
 
     ProductType productType;
     Sprite sprite;
@@ -189,8 +192,6 @@ public class Product {
         Progress = initialTime;
         currentBuildingCost = (new Money(0,0)).Add(baseCost);
         currentProductCost = (new Money(0, 0)).Add(productCost);
-        GameManager.Instance.RegisterProduct(this);
-        GameManager.Instance.MoneyAmountChanged += OnMoneyAmountChanged;
     }
 	
 	// Update is called once per frame
@@ -255,7 +256,7 @@ public class Product {
 
     void AddMoneyToCashBox()
     {
-        moneyOnHand = GetProductCost().Add(moneyOnHand);
+        moneyOnHand.Add(GetProductCost());
     }
 
     protected virtual void OnProductSold()
@@ -271,11 +272,6 @@ public class Product {
         productionComplete = false;
         inProgress = true;
         Progress = initialTime * timeMultiplier;
-    }
-
-    void OnMoneyAmountChanged(object source, EventArgs e)
-    {
-        
     }
 
     protected virtual void OnProgressChanged()
@@ -295,10 +291,10 @@ public class Product {
 
     public void BuyBuilding()
     {
-        if (GameManager.Instance.EnoughMoney(currentBuildingCost))
+        if (Funds.Instance.EnoughMoney(currentBuildingCost))
         {
-            GameManager.Instance.SpendMoney(currentBuildingCost);
-            AddBuilding(GameManager.Instance.BuyStep);
+            Funds.Instance.SpendMoney(currentBuildingCost);
+            AddBuilding(Funds.Instance.BuyStep);
             OnBuildingPurchased();
         }
     }
@@ -328,4 +324,44 @@ public class Product {
     {
         return width - (width * Progress / InitialTime);
     }
+
+    #region IXmlSerializable
+    public XmlSchema GetSchema()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void ReadXml(XmlReader reader)
+    {
+        Progress = float.Parse(reader.GetAttribute("Progress"));
+        numberOfBuildings = int.Parse(reader.GetAttribute("NumberOfBuildings"));
+        productPriceMultiplier = float.Parse(reader.GetAttribute("ProductPriceMultiplier"));
+        buildingPriceMultiplier = float.Parse(reader.GetAttribute("BuildingPriceMultiplier"));
+        timeMultiplier = float.Parse(reader.GetAttribute("TimeMultiplier"));
+        inProgress = bool.Parse(reader.GetAttribute("InProgress"));
+        productionComplete = bool.Parse(reader.GetAttribute("ProductionComplete"));
+
+        reader.ReadToFollowing("MoneyOnHand");
+        moneyOnHand.ReadXml(reader);
+
+        currentBuildingCost = GetBuildingCost();
+        currentProductCost = CalculateProductCost();
+        OnBuildingPurchased();
+    }
+
+    public void WriteXml(XmlWriter writer)
+    {
+        writer.WriteAttributeString("Progress", progress.ToString());
+        writer.WriteAttributeString("NumberOfBuildings", numberOfBuildings.ToString());
+        writer.WriteAttributeString("ProductPriceMultiplier", productPriceMultiplier.ToString());
+        writer.WriteAttributeString("BuildingPriceMultiplier", buildingPriceMultiplier.ToString());
+        writer.WriteAttributeString("TimeMultiplier", timeMultiplier.ToString());
+        writer.WriteAttributeString("InProgress", inProgress.ToString());
+        writer.WriteAttributeString("ProductionComplete", productionComplete.ToString());
+
+        writer.WriteStartElement("MoneyOnHand");
+        moneyOnHand.WriteXml(writer);
+        writer.WriteEndElement();
+    }
+    #endregion
 }

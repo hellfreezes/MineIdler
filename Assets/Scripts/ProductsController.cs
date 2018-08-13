@@ -1,7 +1,14 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
+
+//public class ProductArgs : EventArgs
+//{
+//    public Product Product { get; set; }
+//}
 
 public class ProductsController : MonoBehaviour {
     [SerializeField]
@@ -12,7 +19,7 @@ public class ProductsController : MonoBehaviour {
     Sprite[] sprites;
 
     List<ProductPrototype> productsPrototypes;
-    List<Product> products;
+    Dictionary<ProductType, Product> products;
 
     static ProductsController instance;
     public static ProductsController Instance
@@ -23,6 +30,8 @@ public class ProductsController : MonoBehaviour {
         }
     }
 
+    public event EventHandler ProductCreated;
+    
     // Use this for initialization
     void OnEnable () {
         if (instance != null)
@@ -39,9 +48,9 @@ public class ProductsController : MonoBehaviour {
 
     private void Update()
     {
-        foreach (Product p in products)
+        foreach (ProductType p in products.Keys)
         {
-            p.Update(Time.deltaTime);
+            products[p].Update(Time.deltaTime);
         }
     }
 
@@ -102,7 +111,7 @@ public class ProductsController : MonoBehaviour {
 
     void CreateProductsAndUI()
     {
-        products = new List<Product>();
+        products = new Dictionary<ProductType, Product>();
 
         foreach (ProductPrototype proto in productsPrototypes)
         {
@@ -110,16 +119,48 @@ public class ProductsController : MonoBehaviour {
             ProductPanel panel = go.GetComponent<ProductPanel>();
             Product p = new Product(proto);
 
+            //FIXME: не тут надо подписываться
+            //p.ProductSold += Funds.Instance.OnProductSold;
+            //p.ProductSold += SoundController.Instance.OnProductSold;
+            //p.BuildingPurchased += SoundController.Instance.OnBuy;
+
             go.transform.SetParent(gameField);
             go.name = "Product - " + p.ProductName;
 
             panel.AssignProduct(p);
-            products.Add(p);
+            products.Add(proto.productType, p);
+            OnProductCreated(p);
+        }
+    }
+
+    void OnProductCreated(Product product)
+    {
+        if (ProductCreated != null)
+        {
+            ProductCreated(product, EventArgs.Empty); //new ProductArgs() { Product = product }
         }
     }
 
     public Sprite GetProductSprite(ProductType t)
     {
         return sprites[(int)t];
+    }
+
+    public Product GetProductFromList(ProductType type)
+    {
+        if (products.ContainsKey(type))
+        {
+            return products[type];
+        }
+        else
+        {
+            Debug.LogError("products не содержит ключа '" + type + "'");
+            return null;
+        }
+    }
+
+    public Product[] GetProducts()
+    {
+        return products.Values.ToArray();
     }
 }

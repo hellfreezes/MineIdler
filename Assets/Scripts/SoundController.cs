@@ -65,6 +65,8 @@ public class SoundController : MonoBehaviour {
 
         if (playMusic)
             SetBackgrounMusic();
+
+        ProductsController.Instance.ProductCreated += OnProductCreated;
     }
 
     void SetBackgrounMusic()
@@ -78,17 +80,24 @@ public class SoundController : MonoBehaviour {
 		
 	}
 
-    public void OnProductSold (object source, EventArgs e)
+    protected virtual void OnProductSold (object source, EventArgs e)
     {
         if (playSound)
             AudioSource.PlayClipAtPoint(onSold, universalPosition);
     }
 
-    public void OnBuy (object source, EventArgs e)
+    protected virtual void OnBuy (object source, EventArgs e)
     {
         int i = UnityEngine.Random.Range(0, onBuy.Length - 1);
         if (playSound)
             AudioSource.PlayClipAtPoint(onBuy[i], universalPosition);
+    }
+
+    protected virtual void OnProductCreated(object source, EventArgs e)
+    {
+        Product p = (Product)source;
+        p.ProductSold += OnProductSold;
+        p.BuildingPurchased += OnBuy;
     }
 
     void MuteMusic()

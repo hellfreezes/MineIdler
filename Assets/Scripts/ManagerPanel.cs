@@ -19,7 +19,7 @@ public class ManagerPanel : MonoBehaviour {
     private void OnEnable()
     {
         InitUIElements();
-        GameManager.Instance.MoneyAmountChanged += OnMoneyAmountChanged;
+        Funds.Instance.MoneyAmountChanged += OnMoneyAmountChanged;
     }
 
     private void InitUIElements()
@@ -54,7 +54,7 @@ public class ManagerPanel : MonoBehaviour {
 
     private void CheckHireAbility()
     {
-        if (GameManager.Instance.EnoughMoney(manager.Price))
+        if (Funds.Instance.EnoughMoney(manager.Price))
         {
             buttomHireUI.interactable = true;
         }

@@ -47,7 +47,7 @@ public class ProductPanel : MonoBehaviour {
     {
         product = p;
 
-        GameManager.Instance.MoneyAmountChanged += OnMoneyAmountChanged;
+        Funds.Instance.MoneyAmountChanged += OnMoneyAmountChanged;
         p.BuildingPurchased += OnBuildingPurchased;
         p.ProgressChanged += OnProgressChanged;
         p.ProductionComplete += OnProductionComplete;
@@ -81,7 +81,7 @@ public class ProductPanel : MonoBehaviour {
     void UpdateButtonUI()
     {
         Text t = buyButtonUI.GetComponentInChildren<Text>();
-        t.text = "Купить " + GameManager.Instance.BuyStep.ToString() + " за $" + (product.CurrentBuildingCost.ToString());// ("#.##"); Mult(GameManager.Instance.BuyStep))
+        t.text = "Купить " + Funds.Instance.BuyStep.ToString() + " за $" + (product.CurrentBuildingCost.ToString());// ("#.##"); Mult(GameManager.Instance.BuyStep))
     }
 
     void UpdateProgressTextUI()
@@ -109,7 +109,7 @@ public class ProductPanel : MonoBehaviour {
 
     void CheckForAbilityToBuyBuilding()
     {
-        if (GameManager.Instance.EnoughMoney(product.CurrentBuildingCost))
+        if (Funds.Instance.EnoughMoney(product.CurrentBuildingCost))
         {
             buyButtonUI.interactable = true;
         }
