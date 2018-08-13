@@ -325,6 +325,21 @@ public class Product : IXmlSerializable {
         return width - (width * Progress / InitialTime);
     }
 
+    public void Reset()
+    {
+        Progress = initialTime;
+        productPriceMultiplier = 0;
+        buildingPriceMultiplier = 0;
+        timeMultiplier = 0;
+        numberOfBuildings = 0;
+        inProgress = false;
+        productionComplete = false;
+        currentBuildingCost = GetBuildingCost();
+        currentProductCost = CalculateProductCost();
+
+        OnBuildingPurchased();
+    }
+
     #region IXmlSerializable
     public XmlSchema GetSchema()
     {
@@ -340,6 +355,9 @@ public class Product : IXmlSerializable {
         timeMultiplier = float.Parse(reader.GetAttribute("TimeMultiplier"));
         inProgress = bool.Parse(reader.GetAttribute("InProgress"));
         productionComplete = bool.Parse(reader.GetAttribute("ProductionComplete"));
+
+        if (productionComplete)
+            OnProductionComplete();
 
         reader.ReadToFollowing("MoneyOnHand");
         moneyOnHand.ReadXml(reader);

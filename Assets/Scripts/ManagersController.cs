@@ -86,6 +86,14 @@ public class ManagersController : MonoBehaviour {
         }
 	}
 
+    public void ResetAll()
+    {
+        foreach (Manager m in managers.Values)
+        {
+            m.Reset();
+        }
+    }
+
     public Manager GetManagerOfType(ProductType type)
     {
         if (managers.ContainsKey(type))

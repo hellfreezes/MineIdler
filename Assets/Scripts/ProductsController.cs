@@ -48,9 +48,9 @@ public class ProductsController : MonoBehaviour {
 
     private void Update()
     {
-        foreach (ProductType p in products.Keys)
+        foreach (Product p in products.Values)
         {
-            products[p].Update(Time.deltaTime);
+            p.Update(Time.deltaTime);
         }
     }
 
@@ -58,6 +58,14 @@ public class ProductsController : MonoBehaviour {
     {
         CreatePrototypes();
         CreateProductsAndUI();
+    }
+
+    public void ResetAll()
+    {
+        foreach (Product p in products.Values)
+        {
+            p.Reset();
+        }
     }
 
     void CreatePrototypes()

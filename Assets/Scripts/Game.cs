@@ -38,16 +38,17 @@ public class Game : IXmlSerializable {
             ProductType productType = (ProductType)int.Parse(reader.GetAttribute("ProductType"));
             ProductsController.Instance.GetProductFromList(productType).ReadXml(reader);
 
-        } while (reader.ReadToFollowing("Product"));
-        reader.ReadToFollowing("Managers");
-        reader.ReadToDescendant("Manager");
-        do
+        } while (reader.ReadToNextSibling("Product"));
+        if (reader.ReadToFollowing("Managers"))
         {
-            ProductType productType = (ProductType)int.Parse(reader.GetAttribute("ProductType"));
-            Debug.Log(productType);
-            ManagersController.Instance.GetManagerOfType(productType).ReadXml(reader);
+            reader.ReadToDescendant("Manager");
+            do
+            {
+                ProductType productType = (ProductType)int.Parse(reader.GetAttribute("ProductType"));
+                ManagersController.Instance.GetManagerOfType(productType).ReadXml(reader);
 
-        } while (reader.ReadToFollowing("Manager"));
+            } while (reader.ReadToNextSibling("Manager"));
+        }
     }
 
     public void WriteXml(XmlWriter writer)

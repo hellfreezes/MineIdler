@@ -55,6 +55,12 @@ public class Funds : IXmlSerializable
         ProductsController.Instance.ProductCreated += OnProductCreated;
     }
 
+    public void Reset()
+    {
+        buyStep = 1;
+        money = new Money(0, 0);
+    }
+
     public bool EnoughMoney(Money amount)
     {
         return (money.IsGreaterThen(amount) || money.IsEqual(amount));

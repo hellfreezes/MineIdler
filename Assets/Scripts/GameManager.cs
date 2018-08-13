@@ -6,14 +6,18 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour {
     [SerializeField]
     float startMoney = 0.004f;
+    [SerializeField]
+    float saveIntervale = 30f;
 
     public Funds funds;
 
     private Game game;
+    private float timer = 0;
 
     static GameManager instance;
 
@@ -34,6 +38,10 @@ public class GameManager : MonoBehaviour {
 
     private void Start()
     {
+        // Выполнить сохранение при обноружении выхода из приложения
+        Application.quitting += SaveGame;
+
+        timer = saveIntervale;
         game = new Game();
         funds = new Funds();
 
@@ -41,16 +49,49 @@ public class GameManager : MonoBehaviour {
         ManagersController.Instance.Init();
 
         funds.AddMoneyAmount(startMoney);
-
+        Autoload();
     }
-    
+
+    private void Update()
+    {
+        Autosave();
+    }
+
+    private void Autoload()
+    {
+        LoadGame();
+    }
+
+    public void ResetGame()
+    {
+        funds.Reset();
+        ProductsController.Instance.ResetAll();
+        ManagersController.Instance.ResetAll();
+
+        funds.AddMoneyAmount(startMoney);
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
+
+    private void Autosave()
+    {
+        timer -= Time.deltaTime;
+        if (timer <= 0)
+        {
+            SaveGame();
+            timer = saveIntervale;
+        }
+    }
+
     public void SaveGame()
     {
         XmlSerializer serializer = new XmlSerializer(typeof(Game));
         TextWriter writer = new StringWriter();
         serializer.Serialize(writer, game);
         Debug.Log("Игра сохранена");
-        Debug.Log(writer.ToString());
         writer.Close();
         PlayerPrefs.SetString("save01", writer.ToString());
     }

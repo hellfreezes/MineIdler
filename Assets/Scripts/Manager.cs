@@ -163,6 +163,15 @@ public class Manager : IXmlSerializable {
         OnHired();
     }
 
+    public void Reset()
+    {
+        if (product != null)
+            product.ProductionComplete -= OnProductionComplete;
+        product = null;
+        isActive = false;
+        OnHired();
+    }
+
     void OnHired()
     {
         if (Hired != null)
@@ -180,11 +189,13 @@ public class Manager : IXmlSerializable {
     public void ReadXml(XmlReader reader)
     {
         isActive = bool.Parse(reader.GetAttribute("IsActive"));
-
-        product = ProductsController.Instance.GetProductFromList(productType);
-        product.ProductionComplete += OnProductionComplete;
-        product.SellAll(); // запускаем первый раз на случай если есть что продать
-        OnHired();
+        if (isActive == true)
+        {
+            product = ProductsController.Instance.GetProductFromList(productType);
+            product.ProductionComplete += OnProductionComplete;
+            product.SellAll(); // запускаем первый раз на случай если есть что продать
+            OnHired();
+        }
     }
 
     public void WriteXml(XmlWriter writer)
