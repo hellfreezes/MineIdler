@@ -341,8 +341,9 @@ public class Money : IXmlSerializable
 
         step = int.Parse(reader.GetAttribute("Step"));
 
-        if (reader.ReadToFollowing("Value"))
+        if (reader.ReadToDescendant("Values"))
         {
+            reader.ReadToDescendant("Value");
             do
             {
                 int s = int.Parse(reader.GetAttribute("step"));

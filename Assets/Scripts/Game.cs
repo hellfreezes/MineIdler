@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
@@ -33,12 +34,13 @@ public class Game : IXmlSerializable {
         Funds.Instance.ReadXml(reader);
         reader.ReadToFollowing("Products");
         reader.ReadToDescendant("Product");
+        bool isR;
         do
         {
             ProductType productType = (ProductType)int.Parse(reader.GetAttribute("ProductType"));
             ProductsController.Instance.GetProductFromList(productType).ReadXml(reader);
-
-        } while (reader.ReadToNextSibling("Product"));
+            isR = reader.ReadToNextSibling("Product");
+        } while (isR);
         if (reader.ReadToFollowing("Managers"))
         {
             reader.ReadToDescendant("Manager");

@@ -169,6 +169,7 @@ public class Manager : IXmlSerializable {
             product.ProductionComplete -= OnProductionComplete;
         product = null;
         isActive = false;
+        panel.SetActive(true);
         OnHired();
     }
 

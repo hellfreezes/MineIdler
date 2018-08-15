@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
@@ -328,16 +329,17 @@ public class Product : IXmlSerializable {
     public void Reset()
     {
         Progress = initialTime;
-        productPriceMultiplier = 0;
-        buildingPriceMultiplier = 0;
-        timeMultiplier = 0;
+        productPriceMultiplier = 1;
+        buildingPriceMultiplier = 1;
+        timeMultiplier = 1;
         numberOfBuildings = 0;
-        inProgress = false;
+        inProgress = true;
         productionComplete = false;
-        currentBuildingCost = GetBuildingCost();
-        currentProductCost = CalculateProductCost();
+        currentBuildingCost = BaseCost;
+        currentProductCost = ProductCost;
 
         OnBuildingPurchased();
+        OnProductSold();
     }
 
     #region IXmlSerializable
@@ -359,8 +361,11 @@ public class Product : IXmlSerializable {
         if (productionComplete)
             OnProductionComplete();
 
-        reader.ReadToFollowing("MoneyOnHand");
-        moneyOnHand.ReadXml(reader);
+        XmlReader localReader = XmlReader.Create(new StringReader(reader.ReadInnerXml()), reader.Settings);
+
+        localReader.ReadToDescendant("MoneyOnHand");
+        moneyOnHand.ReadXml(localReader);
+        localReader.Close();
 
         currentBuildingCost = GetBuildingCost();
         currentProductCost = CalculateProductCost();

@@ -92,8 +92,9 @@ public class GameManager : MonoBehaviour {
         TextWriter writer = new StringWriter();
         serializer.Serialize(writer, game);
         Debug.Log("Игра сохранена");
+        Debug.Log(writer.ToString());
         writer.Close();
-        PlayerPrefs.SetString("save01", writer.ToString());
+        PlayerPrefs.SetString("save02", writer.ToString());
     }
 
     public void LoadGame()
