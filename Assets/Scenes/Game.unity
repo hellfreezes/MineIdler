@@ -755,6 +755,49 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 263924992}
   m_CullTransparentMesh: 0
+--- !u!1 &270474697
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 270474698}
+  - component: {fileID: 270474699}
+  m_Layer: 0
+  m_Name: UpgradesController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &270474698
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 270474697}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1093422616}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &270474699
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 270474697}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06ac32648df3f0d4f8d4381027242b86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  upgradesListPanel: {fileID: 1967654835}
+  upgradePanelPrefab: {fileID: 1117951912591750, guid: 2db69cf9e7b835d41820c28cf3e0582c,
+    type: 2}
 --- !u!1 &302088012
 GameObject:
   m_ObjectHideFlags: 0
@@ -3564,6 +3607,7 @@ Transform:
   - {fileID: 1462508405}
   - {fileID: 453770079}
   - {fileID: 2012137016}
+  - {fileID: 270474698}
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

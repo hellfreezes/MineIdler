@@ -74,7 +74,7 @@ public class ManagersController : MonoBehaviour {
             GameObject panel = Instantiate(managerPanelPrefab);
             panel.transform.SetParent(managersList);
             m.Panel = panel;
-            panel.GetComponent<ManagerPanel>().AssignManager(m);
+            panel.GetComponent<ManagerPanel>().Assign(m);
         }
     }
 	

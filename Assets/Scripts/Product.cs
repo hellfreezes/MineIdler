@@ -361,11 +361,11 @@ public class Product : IXmlSerializable {
         if (productionComplete)
             OnProductionComplete();
 
-        XmlReader localReader = XmlReader.Create(new StringReader(reader.ReadInnerXml()), reader.Settings);
+        //XmlReader localReader = XmlReader.Create(new StringReader(reader.ReadInnerXml()), reader.Settings);
 
-        localReader.ReadToDescendant("MoneyOnHand");
-        moneyOnHand.ReadXml(localReader);
-        localReader.Close();
+        //localReader.ReadToDescendant("MoneyOnHand");
+        //moneyOnHand.ReadXml(localReader);
+        //localReader.Close();
 
         currentBuildingCost = GetBuildingCost();
         currentProductCost = CalculateProductCost();
@@ -382,9 +382,9 @@ public class Product : IXmlSerializable {
         writer.WriteAttributeString("InProgress", inProgress.ToString());
         writer.WriteAttributeString("ProductionComplete", productionComplete.ToString());
 
-        writer.WriteStartElement("MoneyOnHand");
-        moneyOnHand.WriteXml(writer);
-        writer.WriteEndElement();
+        //writer.WriteStartElement("MoneyOnHand");
+        //moneyOnHand.WriteXml(writer);
+        //writer.WriteEndElement();
     }
     #endregion
 }

@@ -39,7 +39,7 @@ public class ManagerPanel : MonoBehaviour {
         CheckHireAbility();
     }
 
-    public void AssignManager(Manager m)
+    public void Assign(Manager m)
     {
         manager = m;
         m.Hired += OnHired;

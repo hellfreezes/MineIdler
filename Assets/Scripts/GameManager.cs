@@ -47,9 +47,10 @@ public class GameManager : MonoBehaviour {
 
         ProductsController.Instance.Init();
         ManagersController.Instance.Init();
+        UpgradeController.Instance.Init();
 
         funds.AddMoneyAmount(startMoney);
-        Autoload();
+        //Autoload();
     }
 
     private void Update()
@@ -94,7 +95,7 @@ public class GameManager : MonoBehaviour {
         Debug.Log("Игра сохранена");
         Debug.Log(writer.ToString());
         writer.Close();
-        PlayerPrefs.SetString("save02", writer.ToString());
+        PlayerPrefs.SetString("save01", writer.ToString());
     }
 
     public void LoadGame()
